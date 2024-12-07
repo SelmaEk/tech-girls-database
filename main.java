@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class COP3703 {
+    //given constants to connect to database
     private static final String URL = "jdbc:mysql://139.62.210.180:3306/cop3703_8";
     private static final String USER = "cop3703_8";
     private static final String PASSWORD = "123456789!";
@@ -36,10 +37,13 @@ public class COP3703 {
                 System.out.println("14. Remove Item from Transaction");
                 System.out.println("15. Exit");
                 System.out.print("Enter your choice (1-15): ");
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
 
-                switch (choice) {
+		//store user choice in choice variable
+		int choice = scanner.nextInt();
+                scanner.nextLine(); //read user input
+
+                //menu switch case structure
+		switch (choice) {
                     case 1:
                         viewCustomers(connection);
                         break;
@@ -87,7 +91,7 @@ public class COP3703 {
                         running = false;
                         break;
                     default:
-                        System.out.println("Invalid choice. Please try again.");
+                        System.out.println("Invalid choice. Try again.");
                         break;
                 }
             }
@@ -103,6 +107,7 @@ public class COP3703 {
                     e.printStackTrace();
                 }
             }
+	    //close scanner
             scanner.close();
         }
     }
@@ -117,11 +122,7 @@ public class COP3703 {
 
             System.out.println("\nCustomer List:");
             while (rs.next()) {
-                System.out.format("ID: %d, Name: %s, Phone: %s, Type: %d\n",
-                        rs.getInt("customerID"),
-                        rs.getString("name"),
-                        rs.getString("phoneNumber"),
-                        rs.getInt("customerType"));
+                System.out.format("ID: %d, Name: %s, Phone: %s, Type: %d\n",rs.getInt("customerID"),rs.getString("name"),rs.getString("phoneNumber"),rs.getInt("customerType"));
             }
         } catch (SQLException e) {
             System.out.println("Failed to fetch customer data.");
@@ -132,15 +133,16 @@ public class COP3703 {
     public static void addCustomer(Connection connection, Scanner scanner) {
         System.out.print("Enter name: ");
         String name = scanner.nextLine();
+	    
         System.out.print("Enter phone number: ");
         String phoneNumber = scanner.nextLine();
+	    
         System.out.print("Enter customer type: ");
         int customerType = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+	    
+        scanner.nextLine(); 
 
-        String query = String.format(
-                "INSERT INTO Customer (name, phoneNumber, customerType) VALUES ('%s', '%s', %d)",
-                name, phoneNumber, customerType);
+        String query = String.format("INSERT INTO Customer (name, phoneNumber, customerType) VALUES ('%s', '%s', %d)",name, phoneNumber, customerType);
 
         try (Statement st = connection.createStatement()) {
             st.executeUpdate(query);
@@ -153,16 +155,17 @@ public class COP3703 {
 
     public static void updateCustomer(Connection connection, Scanner scanner) {
         System.out.print("Enter customer ID to update: ");
+	    
         int customerID = scanner.nextInt();
         scanner.nextLine(); // Consume newline
+	    
         System.out.print("Enter new name: ");
         String name = scanner.nextLine();
+	    
         System.out.print("Enter new phone number: ");
         String phoneNumber = scanner.nextLine();
 
-        String query = String.format(
-                "UPDATE Customer SET name = '%s', phoneNumber = '%s' WHERE customerID = %d",
-                name, phoneNumber, customerID);
+        String query = String.format("UPDATE Customer SET name = '%s', phoneNumber = '%s' WHERE customerID = %d", name, phoneNumber, customerID);
 
         try (Statement st = connection.createStatement()) {
             int rowsAffected = st.executeUpdate(query);
@@ -180,7 +183,8 @@ public class COP3703 {
     public static void deleteCustomer(Connection connection, Scanner scanner) {
         System.out.print("Enter customer ID to delete: ");
         int customerID = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+	    
+        scanner.nextLine();
 
         String query = String.format("DELETE FROM Customer WHERE customerID = %d", customerID);
 
@@ -206,10 +210,7 @@ public class COP3703 {
 
             System.out.println("\nProduct List:");
             while (rs.next()) {
-                System.out.format("UPC: %s, Name: %s, Price: %.2f\n",
-                        rs.getString("upcBarcode"),
-                        rs.getString("productName"),
-                        rs.getDouble("price"));
+                System.out.format("UPC: %s, Name: %s, Price: %.2f\n", rs.getString("upcBarcode"), rs.getString("productName"), rs.getDouble("price"));
             }
         } catch (SQLException e) {
             System.out.println("Failed to fetch product data.");
@@ -249,8 +250,7 @@ public class COP3703 {
         scanner.nextLine(); // Consume newline
 
         String query = String.format(
-                "UPDATE Item SET productName = '%s', price = %.2f WHERE upcBarcode = '%s'",
-                productName, price, upcBarcode);
+                "UPDATE Item SET productName = '%s', price = %.2f WHERE upcBarcode = '%s'", productName, price, upcBarcode);
 
         try (Statement st = connection.createStatement()) {
             int rowsAffected = st.executeUpdate(query);
@@ -312,16 +312,18 @@ public class COP3703 {
 	public static void addTransaction(Connection connection, Scanner scanner) {
 		System.out.print("Enter Customer ID: ");
 		int customerID = scanner.nextInt();
-		scanner.nextLine(); // Consume newline
+		
+		scanner.nextLine(); 
 		System.out.print("Enter Payment Type (e.g., Credit, Debit): ");
 		String paymentType = scanner.nextLine();
+		
 		System.out.print("Enter Total Amount: ");
 		double totalAmount = scanner.nextDouble();
-		scanner.nextLine(); // Consume newline
+		
+		scanner.nextLine(); 
 	
 		String query = String.format(
-				"INSERT INTO Transaction (customerID, timeStamp, paymentType, totalAmount) VALUES (%d, NOW(), '%s', %.2f)",
-				customerID, paymentType, totalAmount);
+				"INSERT INTO Transaction (customerID, timeStamp, paymentType, totalAmount) VALUES (%d, NOW(), '%s', %.2f)", customerID, paymentType, totalAmount);
 	
 		try (Statement st = connection.createStatement()) {
 				st.executeUpdate(query);
@@ -384,23 +386,14 @@ public class COP3703 {
 		int transID = scanner.nextInt();
 		scanner.nextLine(); // Consume newline
 	
-		String query = String.format(
-				"SELECT CartItem.transID, CartItem.upcBarcode, Item.productName, CartItem.quantity " +
-						"FROM CartItem " +
-						"JOIN Item ON CartItem.upcBarcode = Item.upcBarcode " +
-						"WHERE CartItem.transID = %d",
-						transID);
+		String query = String.format("SELECT CartItem.transID, CartItem.upcBarcode, Item.productName, CartItem.quantity " +"FROM CartItem " + "JOIN Item ON CartItem.upcBarcode = Item.upcBarcode " + "WHERE CartItem.transID = %d", transID);
 	
 	try (Statement st = connection.createStatement();
 	ResultSet rs = st.executeQuery(query)) {
 	
 	System.out.println("\nTransaction Items:");
 	while (rs.next()) {
-	System.out.format("Transaction ID: %d, UPC: %s, Product: %s, Quantity: %d\n",
-	rs.getInt("transID"),
-	rs.getString("upcBarcode"),
-	rs.getString("productName"),
-	rs.getInt("quantity"));
+	System.out.format("Transaction ID: %d, UPC: %s, Product: %s, Quantity: %d\n", rs.getInt("transID"), rs.getString("upcBarcode"), rs.getString("productName"), rs.getInt("quantity"));
 	}
 	} catch (SQLException e) {
 	System.out.println("Failed to fetch transaction items.");
