@@ -221,11 +221,14 @@ public class COP3703 {
     public static void addProduct(Connection connection, Scanner scanner) {
         System.out.print("Enter product UPC: ");
         String upcBarcode = scanner.nextLine();
+	    
         System.out.print("Enter product name: ");
         String productName = scanner.nextLine();
+	    
         System.out.print("Enter product price: ");
         double price = scanner.nextDouble();
-        scanner.nextLine(); // Consume newline
+	    
+        scanner.nextLine(); 
 
         String query = String.format(
                 "INSERT INTO Item (upcBarcode, productName, price) VALUES ('%s', '%s', %.2f)",
@@ -243,11 +246,14 @@ public class COP3703 {
     public static void updateProduct(Connection connection, Scanner scanner) {
         System.out.print("Enter product UPC to update: ");
         String upcBarcode = scanner.nextLine();
+	    
         System.out.print("Enter new product name: ");
         String productName = scanner.nextLine();
+	    
         System.out.print("Enter new product price: ");
         double price = scanner.nextDouble();
-        scanner.nextLine(); // Consume newline
+	    
+        scanner.nextLine(); 
 
         String query = String.format(
                 "UPDATE Item SET productName = '%s', price = %.2f WHERE upcBarcode = '%s'", productName, price, upcBarcode);
@@ -295,12 +301,7 @@ public class COP3703 {
 	
 			System.out.println("\nTransaction List:");
 			while (rs.next()) {
-				System.out.format("Transaction ID: %d, Customer ID: %d, Timestamp: %s, Payment Type: %s, Total Amount: %.2f\n",
-						rs.getInt("transID"),
-						rs.getInt("customerID"),
-						rs.getTimestamp("timeStamp"),
-						rs.getString("paymentType"),
-						rs.getDouble("totalAmount"));
+				System.out.format("Transaction ID: %d, Customer ID: %d, Timestamp: %s, Payment Type: %s, Total Amount: %.2f\n", rs.getInt("transID"), rs.getInt("customerID"), rs.getTimestamp("timeStamp"), rs.getString("paymentType"), rs.getDouble("totalAmount"));
 			}
 		} 
 		catch (SQLException e) {
