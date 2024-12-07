@@ -3,23 +3,29 @@ package database;
 import java.sql.*;
 import java.util.Scanner;
 
+//The main class for our Point-of-Sale (POS) System
 public class COP3703 {
-    //given constants to connect to database
+    //All of our database connection details & constants
     private static final String URL = "jdbc:mysql://139.62.210.180:3306/cop3703_8";
     private static final String USER = "cop3703_8";
     private static final String PASSWORD = "123456789!";
 
+    // Starting point of the application
     public static void main(String[] args) {
         Connection connection = null;
         Scanner scanner = new Scanner(System.in);
 
         try {
+	    // Where we establish a connection to the MySQL database
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println("Connected to database.");
-
+		
+	    // Flag check to keep the program running on a loop
             boolean running = true;
-
+		
+	    // This displays our main menu and handles user's choices
             while (running) {
+		// Main menu options for the user
                 System.out.println("\nMENU");
                 System.out.println("1. View Customers");
                 System.out.println("2. Add Customer");
@@ -38,67 +44,85 @@ public class COP3703 {
                 System.out.println("15. Exit");
                 System.out.print("Enter your choice (1-15): ");
 
-		//store user choice in choice variable
+		// Getting the user's input from the menu selection
 		int choice = scanner.nextInt();
-                scanner.nextLine(); //read user input
+                scanner.nextLine(); //Read in user input
 
-                //menu switch case structure
+                // Switch case statement to handle the user's choice
 		switch (choice) {
                     case 1:
+			// Calls the method to display all customers
                         viewCustomers(connection);
                         break;
                     case 2:
+			// Calls the method to add a new customer
                         addCustomer(connection, scanner);
                         break;
                     case 3:
+			// Calls the method to update an already existing customer
                         updateCustomer(connection, scanner);
                         break;
                     case 4:
+			// Calls the method to delete a customers information
                         deleteCustomer(connection, scanner);
                         break;
                     case 5:
+			// Calls the method that will display all products available
                         viewProducts(connection);
                         break;
                     case 6:
+			// Calls the method that adds a new product
                         addProduct(connection, scanner);
                         break;
                     case 7:
+			// Calls the method that will update an already exisiting product
                         updateProduct(connection, scanner);
                         break;
                     case 8:
+			// Calls the method that will delete a product information
                         deleteProduct(connection, scanner);
                         break;
                     case 9:
+			// Calls the method that shows all transactions
                         viewTransactions(connection);
                         break;
                     case 10:
+			// Calls the method to add in a new transaction
                         addTransaction(connection, scanner);
                         break;
                     case 11:
+			// Calls the method to delete a transaction information
                         deleteTransaction(connection, scanner);
                         break;
                     case 12:
+			// Calls the method to add an item to a transaction
                         addItemToTransaction(connection, scanner);
                         break;
                     case 13:
+			// Calls the method that will showcase items in a transaction
                         viewTransactionItems(connection, scanner);
                         break;
                     case 14:
+			// Calls the method that will remove an item from a transaction
                         removeItemFromTransaction(connection, scanner);
                         break;
                     case 15:
+			// This alerts the user that the program is exiting and will stop the main loop
                         System.out.println("Exiting...");
                         running = false;
                         break;
                     default:
+			// This is a default case to handle any invalid input
                         System.out.println("Invalid choice. Try again.");
                         break;
                 }
             }
         } catch (SQLException e) {
+	    // Handles errors related to any connection failures from the database or from a SQL execution
             System.out.println("Connection failed!");
             e.printStackTrace();
         } finally {
+	    // Makes sure everything is properly closed when the program ends
             if (connection != null) {
                 try {
                     connection.close();
@@ -107,7 +131,7 @@ public class COP3703 {
                     e.printStackTrace();
                 }
             }
-	    //close scanner
+	    //Close scanner
             scanner.close();
         }
     }
