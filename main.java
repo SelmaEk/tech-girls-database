@@ -51,18 +51,18 @@ public class COP3703 {
 				int choice = scanner.nextInt();
 				scanner.nextLine(); // Read in user input
 
-				// Switch case statement to handle the user's choice
+				// Switch-case statement to handle the user's choices
 				switch (choice) {
 				case 1:
-					// Display all customers (some may not have an account)
+					// Display all customers information (some may not have an account)
 					viewCustomers(connection);
 					break;
 				case 2:
-					// Add a new user account
+					// Creating a new user account
 					createUserAccount(connection, scanner);
 					break;
 				case 3:
-					// Login to user account
+					// Log in to an already existing user account
 					loginUserAccount(connection, scanner);
 					break;
 				case 4:
@@ -70,15 +70,15 @@ public class COP3703 {
 					updateUserAccountInfo(connection, scanner);
 					break;
 				case 5:
-					// Forgot Password (change password when not logged in)
+					// Reset password without logging in
 					changePasswordBeforeLogin(connection, scanner);
 					break;
 				case 6:
-					// Change password while logged in
+					// Reset password while logged in
 					changePasswordAfterLogin(connection, scanner);
 					break;
 				case 7:
-					// Delete a user account
+					// Delete an already existing user account
 					deleteUserAccount(connection, scanner);
 					break;
 				case 8:
@@ -86,7 +86,7 @@ public class COP3703 {
 					viewProducts(connection);
 					break;
 				case 9:
-					// Add a new product
+					// Adding a new product
 					addProduct(connection, scanner);
 					break;
 				case 10:
@@ -106,7 +106,7 @@ public class COP3703 {
 					addTransaction(connection, scanner);
 					break;
 				case 14:
-					// Delete a transaction
+					// Delete an exisiting transaction
 					deleteTransaction(connection, scanner);
 					break;
 				case 15:
@@ -126,10 +126,12 @@ public class COP3703 {
 					removeItemFromTransaction(connection, scanner);
 					break;
 				case 19:
+					// Program is exiting and will stop the main loop
 					System.out.println("Exiting...");
 					running = false;
 					break;
 				default:
+					// This is a default case to handle any invalid input
 					System.out.println("Invalid choice. Please try again.");
 					break;
 				}
@@ -152,6 +154,7 @@ public class COP3703 {
 			scanner.close();
 		}
 	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// CUSTOMER MANAGEMENT
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,8 +181,10 @@ public class COP3703 {
 			e.printStackTrace();
 		}
 	}
-
+	
+	// Method to create a new user account
 	public static void createUserAccount(Connection connection, Scanner scanner) {
+		// Prompts user for account information
 		System.out.print("Enter username: ");
 		String username = scanner.nextLine();
 		System.out.print("Enter password: ");
@@ -191,25 +196,31 @@ public class COP3703 {
 		System.out.print("Enter email: ");
 		String email = scanner.nextLine();
 
+		// SQL query to insert the new user data
 		String query = String.format(
 				"INSERT INTO userAccount (username, password, name, phoneNumber, email) VALUES ('%s', '%s', '%s', '%s', '%s')",
 				username, password, name, phoneNumber, email);
 
 		try (Statement st = connection.createStatement()) {
+			// Execute the query to insert the account
 			st.executeUpdate(query);
 			System.out.println("User account created successfully.");
 		} catch (SQLException e) {
+			// Handles errors during account creation
 			System.out.println("Failed to create user account.");
 			e.printStackTrace();
 		}
 	}
 
+	// Method to log in to an already existing user account
 	public static boolean loginUserAccount(Connection connection, Scanner scanner) {
+		// Prompts the user for login credentials
 		System.out.print("Enter username: ");
 		String username = scanner.nextLine();
 		System.out.print("Enter password: ");
 		String password = scanner.nextLine();
 
+		// SQL query to confirm the login details
 		String query = String.format(
 				"SELECT * FROM userAccount WHERE username = '%s' AND password = '%s'",
 				username, password);
@@ -217,6 +228,7 @@ public class COP3703 {
 		try (Statement st = connection.createStatement();
 				ResultSet rs = st.executeQuery(query)) {
 
+			//Check if the matching record exists
 			if (rs.next()) {
 				System.out.println("Login successful!");
 				return true;
@@ -225,16 +237,20 @@ public class COP3703 {
 				return false;
 			}
 		} catch (SQLException e) {
+			// Handles any errors during the login
 			System.out.println("Failed to log in.");
 			e.printStackTrace();
 			return false;
 		}
 	}
 
+	// A method that updates the user account information
 	public static void updateUserAccountInfo(Connection connection, Scanner scanner) {
+		// Prompts the user for the username to update
 		System.out.print("Enter username to update: ");
 		String username = scanner.nextLine();
 
+		// Prompts for the new account details
 		System.out.print("Enter new full name: ");
 		String name = scanner.nextLine();
 		System.out.print("Enter new phone number (xxx-xxx-xxxx): ");
@@ -242,90 +258,118 @@ public class COP3703 {
 		System.out.print("Enter new email: ");
 		String email = scanner.nextLine();
 
+		// SQL query to update the new user account details
 		String query = String.format(
 				"UPDATE userAccount SET name = '%s', phoneNumber = '%s', email = '%s' WHERE username = '%s'",
 				name, phoneNumber, email, username);
 
 		try (Statement st = connection.createStatement()) {
+			// Executes the query to update the account
 			st.executeUpdate(query);
 			System.out.println("User account updated successfully.");
 		} catch (SQLException e) {
+			// Catches and handles any errors during an account update
 			System.out.println("Failed to update user account.");
 			e.printStackTrace();
 		}
 	}
 
+	// Method to change a user's password without having to log in
 	public static boolean changePasswordBeforeLogin(Connection connection, Scanner scanner) {
+		//Prompts the user to enter their username
 		System.out.print("Enter username: ");
 		String username = scanner.nextLine();
 
-		// Does username exist?
+		// SQL query to check if the username exists in the database
 		String query = String.format("SELECT * FROM userAccount WHERE username = '%s'", username);
+		
 		try (Statement st = connection.createStatement();
 				ResultSet rs = st.executeQuery(query)) {
+			// Check if the query returns any results
 			if (rs.next()) {
+				// Prompt the user to enter a new password
 				System.out.print("Enter new password: ");
 				String newPassword = scanner.nextLine();
+
+				// SQL query to update the user's new password
 				String updateQuery = String.format("UPDATE userAccount SET password = '%s' WHERE username = '%s'", newPassword, username);
 				st.executeUpdate(updateQuery);
 				System.out.println("Password updated successfully.");
-				return true;
+				return true; // Indicates a success in updating the password
 			} else {
+				// If no matching username is found, it returns false
 				System.out.println("Username not found.");
 				return false;
 			}
 		} catch (SQLException e) {
+			// Handles the SQL exceptions and provides feedback to user
 			System.out.println("Failed to update password.");
 			e.printStackTrace();
 			return false;
 		}
 	}
-
+	
+	// Method to change a user's password while being logged in
 	public static boolean changePasswordAfterLogin(Connection connection, Scanner scanner) {
+		// Prompt the user for their username and current password
 		System.out.print("Enter username: ");
 		String username = scanner.nextLine();
 		System.out.print("Enter password: ");
 		String password = scanner.nextLine();
+
+		// SQL query to get the current password for validation
 		String query = String.format("SELECT password FROM userAccount WHERE username = '%s'", username);
 
 		try (Statement st = connection.createStatement();
-
 				ResultSet rs = st.executeQuery(query)) {
+			// Checks if the query returns any results
 			if (rs.next()) {
+				// Prompts the user to enter new password
 				System.out.print("Enter new password: ");
 				String newPassword = scanner.nextLine();
+
+				// SQL query to update and execute the password in the database
 				String updateQuery = String.format("UPDATE userAccount SET password = '%s' WHERE username = '%s'", newPassword, username);
 				st.executeUpdate(updateQuery);
 				System.out.println("Password updated successfully.");
 				return true;
 			}
 			else {
+				// If no matching username is found, return false
 				System.out.println("Username not found.");
 				return false;
 			}
 
 		} catch (SQLException e) {
+			// Handles the SQL exceptions and gives feedback to user
 			System.out.println("Failed to update password.");
 			e.printStackTrace();
 			return false;
 		}
 	}
 
-	// Delete user account
+	// Method to delete user account
 	public static void deleteUserAccount(Connection connection, Scanner scanner) {
+		// Prompt the user to enter the username of the account
 		System.out.print("Enter username to delete: ");
 		String username = scanner.nextLine();
-
+		
+		// Query to delete the user account
 		String query = String.format("DELETE FROM userAccount WHERE username = '%s'", username);
 
 		try (Statement st = connection.createStatement()) {
+			// Executes the delete query and checks the number of rows affected
 			int rowsDeleted = st.executeUpdate(query);
+
+			// If atleast one row was deleted, confirm success
 			if (rowsDeleted > 0) {
 				System.out.println("User account deleted successfully.");
 			} else {
+				// If no matching username is found, notify user
 				System.out.println("Username not found.");
 			}
 		} catch (SQLException e) {
+			// Handles SQL exceptions
 			System.out.println("Failed to delete user account.");
 			e.printStackTrace();
 		}
