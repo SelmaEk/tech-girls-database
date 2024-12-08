@@ -139,24 +139,35 @@ public class COP3703 {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CUSTOMER MANAGEMENT
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
+    // This method will grab and display all customer records from the database
     public static void viewCustomers(Connection connection) {
+	// SQL query to select all the customer details
         String query = "SELECT customerID, name, phoneNumber, customerType FROM Customer";
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(query)) {
+        try (Statement st = connection.createStatement(); 
+             ResultSet rs = st.executeQuery(query)) { // Executing the query and storing the results
 
             System.out.println("\nCustomer List:");
+
+	    // While loop to go through the results, and print out each customer's details
             while (rs.next()) {
-                System.out.format("ID: %d, Name: %s, Phone: %s, Type: %d\n",rs.getInt("customerID"),rs.getString("name"),rs.getString("phoneNumber"),rs.getInt("customerType"));
+                System.out.format("ID: %d, Name: %s, Phone: %s, Type: %d\n",
+				  rs.getInt("customerID"), 
+				  rs.getString("name"),
+				  rs.getString("phoneNumber"),
+				  rs.getInt("customerType"));
             }
         } catch (SQLException e) {
+	    // Catches and handles any errors that may occur during the query execution
             System.out.println("Failed to fetch customer data.");
             e.printStackTrace();
         }
     }
 
+    // This method will add new customer information to the database
     public static void addCustomer(Connection connection, Scanner scanner) {
-        System.out.print("Enter name: ");
+        //Prompts the user for customer's information
+	System.out.print("Enter name: ");
         String name = scanner.nextLine();
 	    
         System.out.print("Enter phone number: ");
@@ -167,12 +178,14 @@ public class COP3703 {
 	    
         scanner.nextLine(); 
 
+	// SQL query that inserts all that information into a new customer record
         String query = String.format("INSERT INTO Customer (name, phoneNumber, customerType) VALUES ('%s', '%s', %d)",name, phoneNumber, customerType);
 
         try (Statement st = connection.createStatement()) {
             st.executeUpdate(query);
             System.out.println("Customer added successfully.");
         } catch (SQLException e) {
+	    // Handles errors that occur while adding the customer details
             System.out.println("Failed to add customer.");
             e.printStackTrace();
         }
