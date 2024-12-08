@@ -191,6 +191,7 @@ public class COP3703 {
         }
     }
 
+    // 
     public static void updateCustomer(Connection connection, Scanner scanner) {
         System.out.print("Enter customer ID to update: ");
 	    
