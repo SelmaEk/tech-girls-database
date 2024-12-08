@@ -3,9 +3,9 @@ package database;
 import java.sql.*;
 import java.util.Scanner;
 
-//The main class for our Point-of-Sale (POS) System
+// The main class for our Point-of-Sale (POS) System
 public class COP3703 {
-    //All of our database connection details & constants
+    // All of our database connection details & constants
     private static final String URL = "jdbc:mysql://139.62.210.180:3306/cop3703_8";
     private static final String USER = "cop3703_8";
     private static final String PASSWORD = "123456789!";
@@ -131,11 +131,12 @@ public class COP3703 {
                     e.printStackTrace();
                 }
             }
-	    //Close scanner
+	    // Closes the scanner
             scanner.close();
         }
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CUSTOMER MANAGEMENT
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -225,8 +226,10 @@ public class COP3703 {
         }
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // PRODUCT MANAGEMENT
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public static void viewProducts(Connection connection) {
         String query = "SELECT upcBarcode, productName, price FROM Item";
         try (Statement st = connection.createStatement();
@@ -314,141 +317,143 @@ public class COP3703 {
         }
     }
     
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // TRANSACTION MANAGEMENT
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-	// TRANSACTION MANAGEMENT
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-	public static void viewTransactions(Connection connection) {
-		String query = "SELECT transID, customerID, timeStamp, paymentType, totalAmount FROM Transaction";
-		try (Statement st = connection.createStatement();
-				ResultSet rs = st.executeQuery(query)) {
+    public static void viewTransactions(Connection connection) {
+	String query = "SELECT transID, customerID, timeStamp, paymentType, totalAmount FROM Transaction";
+	try (Statement st = connection.createStatement();
+	ResultSet rs = st.executeQuery(query)) {
 	
-			System.out.println("\nTransaction List:");
-			while (rs.next()) {
-				System.out.format("Transaction ID: %d, Customer ID: %d, Timestamp: %s, Payment Type: %s, Total Amount: %.2f\n", rs.getInt("transID"), rs.getInt("customerID"), rs.getTimestamp("timeStamp"), rs.getString("paymentType"), rs.getDouble("totalAmount"));
-			}
-		} 
-		catch (SQLException e) {
-			System.out.println("Failed to fetch transaction data.");
-			e.printStackTrace();
+	     System.out.println("\nTransaction List:");
+	     while (rs.next()) {
+		System.out.format("Transaction ID: %d, Customer ID: %d, Timestamp: %s, Payment Type: %s, Total Amount: %.2f\n", rs.getInt("transID"), rs.getInt("customerID"), rs.getTimestamp("timeStamp"), rs.getString("paymentType"), rs.getDouble("totalAmount"));
+	     }
 	}
+	catch (SQLException e) {
+	      System.out.println("Failed to fetch transaction data.");
+	      e.printStackTrace();
 	}
+    }
 	
-	public static void addTransaction(Connection connection, Scanner scanner) {
-		System.out.print("Enter Customer ID: ");
-		int customerID = scanner.nextInt();
+    public static void addTransaction(Connection connection, Scanner scanner) {
+	System.out.print("Enter Customer ID: ");
+	int customerID = scanner.nextInt();
 		
-		scanner.nextLine(); 
-		System.out.print("Enter Payment Type (e.g., Credit, Debit): ");
-		String paymentType = scanner.nextLine();
+	scanner.nextLine(); 
+	System.out.print("Enter Payment Type (e.g., Credit, Debit): ");
+	String paymentType = scanner.nextLine();
 		
-		System.out.print("Enter Total Amount: ");
-		double totalAmount = scanner.nextDouble();
+	System.out.print("Enter Total Amount: ");
+	double totalAmount = scanner.nextDouble();
 		
-		scanner.nextLine(); 
+	scanner.nextLine(); 
 	
-		String query = String.format(
-				"INSERT INTO Transaction (customerID, timeStamp, paymentType, totalAmount) VALUES (%d, NOW(), '%s', %.2f)", customerID, paymentType, totalAmount);
+	String query = String.format(
+		"INSERT INTO Transaction (customerID, timeStamp, paymentType, totalAmount) VALUES (%d, NOW(), '%s', %.2f)", customerID, paymentType, totalAmount);
 	
-		try (Statement st = connection.createStatement()) {
-				st.executeUpdate(query);
-				System.out.println("Transaction added successfully.");
+	try (Statement st = connection.createStatement()) {
+		st.executeUpdate(query);
+		System.out.println("Transaction added successfully.");
+	} 
+	catch (SQLException e) {
+		System.out.println("Failed to add transaction.");
+		e.printStackTrace();
+	}
+    }
+	
+     public static void deleteTransaction(Connection connection, Scanner scanner) {
+	System.out.print("Enter Transaction ID to delete: ");
+	int transID = scanner.nextInt();
+	scanner.nextLine(); // Consume newline
+	
+	String query = String.format("DELETE FROM Transaction WHERE transID = %d", transID);
+	
+	try (Statement st = connection.createStatement()) {
+		int rowsAffected = st.executeUpdate(query);
+		if (rowsAffected > 0) {
+			System.out.println("Transaction deleted successfully.");
 		} 
-		catch (SQLException e) {
-			System.out.println("Failed to add transaction.");
-			e.printStackTrace();
+		else {
+			System.out.println("No transaction found with the given ID.");
 		}
 	}
-	
-	public static void deleteTransaction(Connection connection, Scanner scanner) {
-		System.out.print("Enter Transaction ID to delete: ");
-		int transID = scanner.nextInt();
-		scanner.nextLine(); // Consume newline
-	
-		String query = String.format("DELETE FROM Transaction WHERE transID = %d", transID);
-	
-		try (Statement st = connection.createStatement()) {
-			int rowsAffected = st.executeUpdate(query);
-			if (rowsAffected > 0) {
-				System.out.println("Transaction deleted successfully.");
-			} 
-			else {
-				System.out.println("No transaction found with the given ID.");
-			}
-		} 
-		catch (SQLException e) {
-			System.out.println("Failed to delete transaction.");
-			e.printStackTrace();
-		}
+	catch (SQLException e) {
+		System.out.println("Failed to delete transaction.");
+		e.printStackTrace();
 	}
+     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //TRANSACTION ITEMS
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	//TRANSACTION ITEMS
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public static void addItemToTransaction(Connection connection, Scanner scanner) {
-		System.out.print("Enter Transaction ID: ");
-		int transID = scanner.nextInt();
-		scanner.nextLine(); // Consume newline
-		System.out.print("Enter Product UPC: ");
-		String upcBarcode = scanner.nextLine();
-		System.out.print("Enter Quantity: ");
-		int quantity = scanner.nextInt();
-		scanner.nextLine(); // Consume newline
+    public static void addItemToTransaction(Connection connection, Scanner scanner) {
+	System.out.print("Enter Transaction ID: ");
+	int transID = scanner.nextInt();
+	scanner.nextLine(); // Consume newline
+	System.out.print("Enter Product UPC: ");
+	String upcBarcode = scanner.nextLine();
+	System.out.print("Enter Quantity: ");
+	int quantity = scanner.nextInt();
+	scanner.nextLine(); // Consume newline
 	
-		String query = String.format("INSERT INTO CartItem (transID, upcBarcode, quantity) VALUES (%d, '%s', %d)", transID, upcBarcode, quantity);
+	String query = String.format("INSERT INTO CartItem (transID, upcBarcode, quantity) VALUES (%d, '%s', %d)", transID, upcBarcode, quantity);
 	
-		try (Statement st = connection.createStatement()) {
-			st.executeUpdate(query);
-			System.out.println("Item added to transaction successfully.");
-		} 
-		catch (SQLException e) {
-			System.out.println("Failed to add item to transaction.");
-			e.printStackTrace();
-		}
+	try (Statement st = connection.createStatement()) {
+		st.executeUpdate(query);
+		System.out.println("Item added to transaction successfully.");
+	} 
+	catch (SQLException e) {
+		System.out.println("Failed to add item to transaction.");
+		e.printStackTrace();
 	}
+    }
 	
-	public static void viewTransactionItems(Connection connection, Scanner scanner) {
-		System.out.print("Enter Transaction ID to view items: ");
-		int transID = scanner.nextInt();
-		scanner.nextLine(); // Consume newline
+    public static void viewTransactionItems(Connection connection, Scanner scanner) {
+	System.out.print("Enter Transaction ID to view items: ");
+	int transID = scanner.nextInt();
+	scanner.nextLine(); // Consume newline
 	
-		String query = String.format("SELECT CartItem.transID, CartItem.upcBarcode, Item.productName, CartItem.quantity " +"FROM CartItem " + "JOIN Item ON CartItem.upcBarcode = Item.upcBarcode " + "WHERE CartItem.transID = %d", transID);
+	String query = String.format("SELECT CartItem.transID, CartItem.upcBarcode, Item.productName, CartItem.quantity " +"FROM CartItem " + "JOIN Item ON CartItem.upcBarcode = Item.upcBarcode " + "WHERE CartItem.transID = %d", transID);
 	
 	try (Statement st = connection.createStatement();
 	ResultSet rs = st.executeQuery(query)) {
 	
-	System.out.println("\nTransaction Items:");
-	while (rs.next()) {
-	System.out.format("Transaction ID: %d, UPC: %s, Product: %s, Quantity: %d\n", rs.getInt("transID"), rs.getString("upcBarcode"), rs.getString("productName"), rs.getInt("quantity"));
-	}
+		System.out.println("\nTransaction Items:");
+		while (rs.next()) {
+			System.out.format("Transaction ID: %d, UPC: %s, Product: %s, Quantity: %d\n", rs.getInt("transID"), rs.getString("upcBarcode"), rs.getString("productName"), rs.getInt("quantity"));
+		}
 	} catch (SQLException e) {
-	System.out.println("Failed to fetch transaction items.");
-	e.printStackTrace();
+		System.out.println("Failed to fetch transaction items.");
+		e.printStackTrace();
 	}
-	}
+    }
 	
-	public static void removeItemFromTransaction(Connection connection, Scanner scanner) {
-		System.out.print("Enter Transaction ID: ");
-		int transID = scanner.nextInt();
-		scanner.nextLine(); // Consume newline
-		System.out.print("Enter Product UPC to remove: ");
-		String upcBarcode = scanner.nextLine();
+    public static void removeItemFromTransaction(Connection connection, Scanner scanner) {
+	System.out.print("Enter Transaction ID: ");
+	int transID = scanner.nextInt();
+	scanner.nextLine(); // Consume newline
+	System.out.print("Enter Product UPC to remove: ");
+	String upcBarcode = scanner.nextLine();
 	
-		String query = String.format("DELETE FROM CartItem WHERE transID = %d AND upcBarcode = '%s'",transID, upcBarcode);
+	String query = String.format("DELETE FROM CartItem WHERE transID = %d AND upcBarcode = '%s'",transID, upcBarcode);
 	
-		try (Statement st = connection.createStatement()) {
-			int rowsAffected = st.executeUpdate(query);
-			if (rowsAffected > 0) {
-				System.out.println("Item removed from transaction successfully.");
-			} 
-			else {
-				System.out.println("No item found with the given details.");
-			}
+	try (Statement st = connection.createStatement()) {
+		int rowsAffected = st.executeUpdate(query);
+		if (rowsAffected > 0) {
+			System.out.println("Item removed from transaction successfully.");
 		} 
-		catch (SQLException e) {
-			System.out.println("Failed to remove item from transaction.");
-			e.printStackTrace();
+		else {
+			System.out.println("No item found with the given details.");
 		}
 	}
+	catch (SQLException e) {
+		System.out.println("Failed to remove item from transaction.");
+		e.printStackTrace();
+	}
+   }
 
 }
 
