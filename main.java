@@ -162,7 +162,7 @@ public class COP3703 {
         System.out.print("Enter phone number: ");
         String phoneNumber = scanner.nextLine();
 	    
-        System.out.print("Enter customer type: ");
+        System.out.print("Enter customer type (Guest or Member): ");
         int customerType = scanner.nextInt();
 	    
         scanner.nextLine(); 
