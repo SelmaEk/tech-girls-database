@@ -378,11 +378,14 @@ public class COP3703 {
 	// PRODUCT MANAGEMENT
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public static void viewProducts(Connection connection) {
+		// SQL query to view all product details
 		String query = "SELECT upcBarcode, productName, price FROM Item";
 		try (Statement st = connection.createStatement();
 				ResultSet rs = st.executeQuery(query)) {
 
 			System.out.println("\nProduct List:");
+
+			// Loop through the results and show the product records
 			while (rs.next()) {
 				System.out.format("UPC: %s, Name: %s, Price: %.2f\n",
 						rs.getString("upcBarcode"),
@@ -390,12 +393,15 @@ public class COP3703 {
 						rs.getDouble("price"));
 			}
 		} catch (SQLException e) {
+			// Handle errors during data retrieval
 			System.out.println("Failed to fetch product data.");
 			e.printStackTrace();
 		}
 	}
-
+	
+	// Method to add a new product to the database
 	public static void addProduct(Connection connection, Scanner scanner) {
+		// Prompt user for product information
 		System.out.print("Enter product UPC: ");
 		String upcBarcode = scanner.nextLine();
 		System.out.print("Enter product name: ");
@@ -404,20 +410,25 @@ public class COP3703 {
 		double price = scanner.nextDouble();
 		scanner.nextLine(); // Consume newline
 
+		// SQL query to insert the the new product 
 		String query = String.format(
 				"INSERT INTO Item (upcBarcode, productName, price) VALUES ('%s', '%s', %.2f)",
 				upcBarcode, productName, price);
 
 		try (Statement st = connection.createStatement()) {
+			// Executing the query to insert the product
 			st.executeUpdate(query);
 			System.out.println("Product added successfully.");
 		} catch (SQLException e) {
+			// Handles errors when adding the new product
 			System.out.println("Failed to add product.");
 			e.printStackTrace();
 		}
 	}
-
+	
+	// Method to update details of an already existing product
 	public static void updateProduct(Connection connection, Scanner scanner) {
+		// Prompt the user for the products new details
 		System.out.print("Enter product UPC to update: ");
 		String upcBarcode = scanner.nextLine();
 		System.out.print("Enter new product name: ");
@@ -426,11 +437,13 @@ public class COP3703 {
 		double price = scanner.nextDouble();
 		scanner.nextLine(); // Consume newline
 
+		//SQL query to update the product
 		String query = String.format(
 				"UPDATE Item SET productName = '%s', price = %.2f WHERE upcBarcode = '%s'",
 				productName, price, upcBarcode);
 
 		try (Statement st = connection.createStatement()) {
+			// Executes the query and checks if any rows were affected
 			int rowsAffected = st.executeUpdate(query);
 			if (rowsAffected > 0) {
 				System.out.println("Product updated successfully.");
@@ -438,18 +451,23 @@ public class COP3703 {
 				System.out.println("No product found with the given UPC.");
 			}
 		} catch (SQLException e) {
+			// Handles errors when updating the product information
 			System.out.println("Failed to update product.");
 			e.printStackTrace();
 		}
 	}
 
+	// This method deletes a already existing product from the database
 	public static void deleteProduct(Connection connection, Scanner scanner) {
+		// Prompts the user to enter the product UPC to delete
 		System.out.print("Enter product UPC to delete: ");
 		String upcBarcode = scanner.nextLine();
 
+		// SQL query to delete the product
 		String query = String.format("DELETE FROM Item WHERE upcBarcode = '%s'", upcBarcode);
 
 		try (Statement st = connection.createStatement()) {
+			// Executes the query and checks if any rows were affected to see if it was successful or not
 			int rowsAffected = st.executeUpdate(query);
 			if (rowsAffected > 0) {
 				System.out.println("Product deleted successfully.");
@@ -457,6 +475,7 @@ public class COP3703 {
 				System.out.println("No product found with the given UPC.");
 			}
 		} catch (SQLException e) {
+			// Handles any errors when trying to delete product information
 			System.out.println("Failed to delete product.");
 			e.printStackTrace();
 		}
@@ -466,12 +485,17 @@ public class COP3703 {
 	// TRANSACTION MANAGEMENT
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	// Method to view all transactions
 	public static void viewTransactions(Connection connection) {
+		// SQL query to select all transaction records
 		String query = "SELECT transID, customerID, timeStamp, paymentType, totalAmount FROM Transaction";
+
+		// Creates a statement object to execute the query and store results
 		try (Statement st = connection.createStatement();
 				ResultSet rs = st.executeQuery(query)) {
 
 			System.out.println("\nTransaction List:");
+			// Loops through the results and prints each transaction record
 			while (rs.next()) {
 				System.out.format("Transaction ID: %d, Customer ID: %d, Timestamp: %s, Payment Type: %s, Total Amount: %.2f\n",
 						rs.getInt("transID"),
@@ -482,12 +506,15 @@ public class COP3703 {
 			}
 		} 
 		catch (SQLException e) {
+			// Handles SQL related errors 
 			System.out.println("Failed to fetch transaction data.");
 			e.printStackTrace();
 		}
 	}
-
+	
+	// Method to add a new transaction
 	public static void addTransaction(Connection connection, Scanner scanner) {
+		// Prompts the user for transaction details
 		System.out.print("Enter Customer ID: ");
 		int customerID = scanner.nextInt();
 		scanner.nextLine();
@@ -497,27 +524,34 @@ public class COP3703 {
 		double totalAmount = scanner.nextDouble();
 		scanner.nextLine();
 
+		// SQL query to insert the new transaction
 		String query = String.format(
 				"INSERT INTO Transaction (customerID, timeStamp, paymentType, totalAmount) VALUES (%d, NOW(), '%s', %.2f)",
 				customerID, paymentType, totalAmount);
 
+		// Executes the query to insert transaction
 		try (Statement st = connection.createStatement()) {
 			st.executeUpdate(query);
 			System.out.println("Transaction added successfully.");
 		} 
 		catch (SQLException e) {
+			// Catches and handles SQL related errors
 			System.out.println("Failed to add transaction.");
 			e.printStackTrace();
 		}
 	}
 
+	// Method to delete a transaction from database
 	public static void deleteTransaction(Connection connection, Scanner scanner) {
+		// Prompt the user for the transaction ID to delete
 		System.out.print("Enter Transaction ID to delete: ");
 		int transID = scanner.nextInt();
 		scanner.nextLine(); // Consume newline
 
+		// SQL query to delete the transaction with the given transaction ID
 		String query = String.format("DELETE FROM Transaction WHERE transID = %d", transID);
 
+		// Query execution & checks the rows affected to check if query was successful
 		try (Statement st = connection.createStatement()) {
 			int rowsAffected = st.executeUpdate(query);
 			if (rowsAffected > 0) {
@@ -528,12 +562,15 @@ public class COP3703 {
 			}
 		} 
 		catch (SQLException e) {
+			// Handles errors
 			System.out.println("Failed to delete transaction.");
 			e.printStackTrace();
 		}
 	}
 
+	// Method to change quantity of a selected product item
 	public static void changeQuantity(Connection connection, Scanner scanner) {
+		// Prompts the user for transaction and item info
 		System.out.print("Transaction ID: ");
 		String transID = scanner.nextLine();
 		System.out.print("UPC Barcode of Item: ");
@@ -541,18 +578,23 @@ public class COP3703 {
 		System.out.print("New Quantity: ");
 		String quantity = scanner.nextLine();
 
+		// SQL query to update and execute quantity of item
 		try (Statement st = connection.createStatement()){
 			String query = "UPDATE CartItem SET quantity = " + quantity + " WHERE transID = '" + transID + "' AND upcBarcode = '" + upcBarcode + "'";
 			st.executeUpdate(query);
 			System.out.println("Quantity updated successfully.");
 		} catch (SQLException e) {
+			// Handles any errors
 			System.out.println("Error updating quantity: " + e.getMessage());
 		}
 	}
 
 	//TRANSACTION ITEMS
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Method to add an item to an already existing transaction
 	public static void addItemToTransaction(Connection connection, Scanner scanner) {
+		// Prompts the user for the transaction ID and product info
 		System.out.print("Enter Transaction ID: ");
 		int transID = scanner.nextInt();
 		scanner.nextLine(); // Consume newline
@@ -562,23 +604,29 @@ public class COP3703 {
 		int quantity = scanner.nextInt();
 		scanner.nextLine(); // Consume newline
 
+		// SQL query to insert the item into the transaction
 		String query = String.format("INSERT INTO CartItem (transID, upcBarcode, quantity) VALUES (%d, '%s', %d)", transID, upcBarcode, quantity);
 
+		// Executes the query
 		try (Statement st = connection.createStatement()) {
 			st.executeUpdate(query);
 			System.out.println("Item added to transaction successfully.");
 		} 
 		catch (SQLException e) {
+			// Catches and handles any errors 
 			System.out.println("Failed to add item to transaction.");
 			e.printStackTrace();
 		}
 	}
 
+	// Method to view all items in a specific transaction
 	public static void viewTransactionItems(Connection connection, Scanner scanner) {
+		// Prompts user for the transaction ID the user wants to view
 		System.out.print("Enter Transaction ID to view items: ");
 		int transID = scanner.nextInt();
 		scanner.nextLine(); // Consume newline
 
+		// SQL query to fetch all items associated with transaction ID
 		String query = String.format(
 				"SELECT CartItem.transID, CartItem.upcBarcode, Item.productName, CartItem.quantity " +
 						"FROM CartItem " +
@@ -586,10 +634,12 @@ public class COP3703 {
 						"WHERE CartItem.transID = %d",
 						transID);
 
+		// Executes the query
 		try (Statement st = connection.createStatement();
 				ResultSet rs = st.executeQuery(query)) {
 
 			System.out.println("\nTransaction Items:");
+			// While loop to go through the results and display each item
 			while (rs.next()) {
 				System.out.format("Transaction ID: %d, UPC: %s, Product: %s, Quantity: %d\n",
 						rs.getInt("transID"),
@@ -598,20 +648,25 @@ public class COP3703 {
 						rs.getInt("quantity"));
 			}
 		} catch (SQLException e) {
+			// Handles SQL related errors 
 			System.out.println("Failed to fetch transaction items.");
 			e.printStackTrace();
 		}
 	}
 
+	// Method to remove item from transaction
 	public static void removeItemFromTransaction(Connection connection, Scanner scanner) {
+		// Prompts the user for the transaction ID and product info
 		System.out.print("Enter Transaction ID: ");
 		int transID = scanner.nextInt();
 		scanner.nextLine(); // Consume newline
 		System.out.print("Enter Product UPC to remove: ");
 		String upcBarcode = scanner.nextLine();
 
+		// SQL query to delete the item from the transaction
 		String query = String.format("DELETE FROM CartItem WHERE transID = %d AND upcBarcode = '%s'",transID, upcBarcode);
 
+		// Executes query and checks rows affected to see if the execution was successful
 		try (Statement st = connection.createStatement()) {
 			int rowsAffected = st.executeUpdate(query);
 			if (rowsAffected > 0) {
@@ -622,6 +677,7 @@ public class COP3703 {
 			}
 		} 
 		catch (SQLException e) {
+			// Handles any errors that may occur
 			System.out.println("Failed to remove item from transaction.");
 			e.printStackTrace();
 		}
