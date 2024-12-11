@@ -162,18 +162,18 @@ public class COP3703 {
 	// This method will grab and display all customer records from the database
 	public static void viewCustomers(Connection connection) {
 		// SQL query to select all the customer details
-		String query = "SELECT customerID, name, phoneNumber, customerType FROM Customer";
+		String query = "SELECT username, name, phoneNumber, email FROM userAccount";
 		try (Statement st = connection.createStatement();
 				ResultSet rs = st.executeQuery(query)) { // Executing the query and storing the results
 
 			System.out.println("\nCustomer List:");
 			// While loop to go through the results, and print out each customer's details
 			while (rs.next()) {
-				System.out.format("ID: %d, Name: %s, Phone: %s, Type: %d\n",
-						rs.getInt("customerID"),
+				System.out.format("Username: %d, Name: %s, Phone: %s, Email: %d\n",
+						rs.getInt("username"),
 						rs.getString("name"),
 						rs.getString("phoneNumber"),
-						rs.getInt("customerType"));
+						rs.getInt("email"));
 			}
 		} catch (SQLException e) {
 			// Catches and handles any errors that may occur during the query execution
