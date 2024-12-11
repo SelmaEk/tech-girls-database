@@ -27,12 +27,12 @@ public class COP3703 {
 				// Main menu options for the user
 				System.out.println("\nMENU");
 				System.out.println("1. View Customers");
-				System.out.println("2. Create User Account");
+				System.out.println("2. Create Customer Account");
 				System.out.println("3. Login to Account");
 				System.out.println("4. Update Account Information");
 				System.out.println("5. Forgot Password");
 				System.out.println("6. Change Password After Login");
-				System.out.println("7. Delete User Account");
+				System.out.println("7. Delete Customer Account");
 				System.out.println("8. View Products");
 				System.out.println("9. Add Product");
 				System.out.println("10. Update Product");
@@ -54,15 +54,15 @@ public class COP3703 {
 				// Switch-case statement to handle the user's choices
 				switch (choice) {
 				case 1:
-					// Display all customers information (some may not have an account)
+					// Display all customers information
 					viewCustomers(connection);
 					break;
 				case 2:
-					// Creating a new user account
+					// Creating a new customer account
 					createUserAccount(connection, scanner);
 					break;
 				case 3:
-					// Log in to an already existing user account
+					// Log in to an already existing customer account
 					loginUserAccount(connection, scanner);
 					break;
 				case 4:
@@ -78,7 +78,7 @@ public class COP3703 {
 					changePasswordAfterLogin(connection, scanner);
 					break;
 				case 7:
-					// Delete an already existing user account
+					// Delete an already existing customer account
 					deleteUserAccount(connection, scanner);
 					break;
 				case 8:
