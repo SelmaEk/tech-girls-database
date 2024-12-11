@@ -170,10 +170,10 @@ public class COP3703 {
 			// While loop to go through the results, and print out each customer's details
 			while (rs.next()) {
 				System.out.format("Username: %s, Name: %s, Phone: %s, Email: %s\n",
-						rs.getInt("username"),
+						rs.getString("username"),
 						rs.getString("name"),
 						rs.getString("phoneNumber"),
-						rs.getInt("email"));
+						rs.getString("email"));
 			}
 		} catch (SQLException e) {
 			// Catches and handles any errors that may occur during the query execution
