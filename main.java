@@ -169,7 +169,7 @@ public class COP3703 {
 			System.out.println("\nCustomer List:");
 			// While loop to go through the results, and print out each customer's details
 			while (rs.next()) {
-				System.out.format("Username: %d, Name: %s, Phone: %s, Email: %d\n",
+				System.out.format("Username: %s, Name: %s, Phone: %s, Email: %s\n",
 						rs.getInt("username"),
 						rs.getString("name"),
 						rs.getString("phoneNumber"),
