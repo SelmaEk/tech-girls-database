@@ -28,7 +28,7 @@ public class COP3703 {
 				System.out.println("\nMENU");
 				System.out.println("1. View Customers");
 				System.out.println("2. Create Customer Account");
-				System.out.println("3. Login to Account");
+				System.out.println("3. Login to Customer Account");
 				System.out.println("4. Update Account Information");
 				System.out.println("5. Forgot Password");
 				System.out.println("6. Change Password After Login");
